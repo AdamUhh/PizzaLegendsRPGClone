@@ -19,9 +19,9 @@ class Sprite {
 
     // ? Configure Animation and Initial State
     this.animations = config.animations || {
-      idleDown: [[0, 0]],
+      "idle-down": [[0, 0]],
     };
-    this.currentAnimation = config.currentAnimation || "idleDown";
+    this.currentAnimation = config.currentAnimation || "idle-down";
     this.currentAnimationFrame = 0; // ? which animation (frame) to show
 
     // ? Reference game object
@@ -29,8 +29,8 @@ class Sprite {
   }
 
   draw(ctx) {
-    const x = this.gameObject.x * 16 - 8;
-    const y = this.gameObject.y * 16 - 18;
+    const x = this.gameObject.x - 8;
+    const y = this.gameObject.y - 18;
 
     this.isShadowLoaded && ctx.drawImage(this.shadow, x, y);
 
