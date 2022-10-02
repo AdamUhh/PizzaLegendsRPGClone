@@ -12,32 +12,47 @@ class Person extends GameObject {
   }
 
   update(state) {
-    this.updatePosition();
-    this.updateSprite(state);
+    if (this.movingProgressRemaining > 0) {
+      this.updatePosition();
+    } else {
+      // ? More cases for starting to walk
 
-    // ? is the person a player, is he supposed to be moving, and is a direction pressed
-    if (this.isPlayerControlled && this.movingProgressRemaining === 0 && state.arrow) {
-      // ? move to this direction
-      this.direction = state.arrow;
+      // ? is the person a player, is he supposed to be moving, and is a direction pressed
+      // ? Case: We're Keyboard Ready and have an arrow pressed
+      if (this.isPlayerControlled && state.arrow) {
+        this.startBehaviour(state, {
+          type: "walk",
+          direction: state.arrow,
+        });
+      }
+      this.updateSprite(state);
+    }
+  }
+
+  startBehaviour(state, behaviour) {
+    // ? set character direction to whatever behaviour has
+    this.direction = behaviour.direction;
+    // ? this is to allow firing a walk command without having to press any keys (for npc)
+    if (behaviour.type === "walk") {
+      // ? stop if space is not free
+      if (state.map.isSpaceTaken(this.x, this.y, this.direction)) return;
+      // ? ready to walk
+      state.map.moveWall(this.x, this.y, this.direction);
       this.movingProgressRemaining = 16;
     }
   }
 
   updatePosition() {
-    if (this.movingProgressRemaining > 0) {
-      const [property, change] = this.directionUpdate[this.direction];
-      this[property] += change;
-      this.movingProgressRemaining -= 1;
-    }
+    const [property, change] = this.directionUpdate[this.direction];
+    this[property] += change;
+    this.movingProgressRemaining -= 1;
   }
 
-  updateSprite(state) {
-    if (this.isPlayerControlled && this.movingProgressRemaining === 0 && !state.arrow) {
-      this.sprite.setAnimation("idle-" + this.direction);
-      return
-    }
+  updateSprite() {
     if (this.movingProgressRemaining > 0) {
       this.sprite.setAnimation("walk-" + this.direction);
+      return;
     }
+    this.sprite.setAnimation("idle-" + this.direction);
   }
 }
