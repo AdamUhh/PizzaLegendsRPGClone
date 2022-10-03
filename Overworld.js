@@ -12,9 +12,9 @@ class Overworld {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       // ? Establish Camera Person
-      const cameraPerson = this.map.gameObjects.hero;
+      const cameraPerson = this.map.gameObjects.hero; // ? mounted in init()
 
-      // ? Update all objects
+      // ? Update all objects (GameObjects/Person)
       Object.values(this.map.gameObjects).forEach((object) => {
         object.update({
           arrow: this.directionInput.direction,
@@ -26,9 +26,16 @@ class Overworld {
       this.map.drawLowerImage(this.ctx, cameraPerson);
 
       // ? Draw Game Objects
-      Object.values(this.map.gameObjects).forEach((object) => {
-        object.sprite.draw(this.ctx, cameraPerson);
-      });
+      Object.values(this.map.gameObjects)
+        .sort((a, b) => {
+          // ? returns the lower y value
+          // ? draws the northern characters are drawn
+          // ? before the southern characters
+          return a.y - b.y;
+        })
+        .forEach((object) => {
+          object.sprite.draw(this.ctx, cameraPerson);
+        });
 
       // ? Draw Upper Layer
       this.map.drawUpperImage(this.ctx, cameraPerson);
@@ -40,11 +47,39 @@ class Overworld {
     step();
   }
 
-  init() {
-    this.map = new OverworldMap(window.OverworldMaps.DemoRoom);
+  bindActionInput() {
+    new KeyPressListener("Enter", () => {
+      // ? Is there a person here to talk to?
+      this.map.checkForActionCutscene();
+    });
+  }
+
+  bindHeroPositionCheck() {
+    document.addEventListener("PersonWalkingComplete", (e) => {
+      if (e.detail.whoId === "hero") {
+        // ? Hero's position has changed
+        this.map.checkForFootstepCutscene();
+      }
+    });
+  }
+
+  startMap(mapConfig) {
+    this.map = new OverworldMap(mapConfig);
+    this.map.overworld = this;
     this.map.mountObjects();
+  }
+
+  init() {
+    this.startMap(window.OverworldMaps.Kitchen);
+    this.bindActionInput();
+    this.bindHeroPositionCheck();
+
     this.directionInput = new DirectionInput();
     this.directionInput.init();
     this.startGameLoop();
+
+    // this.map.startCutscene([
+      // { type: "textMessage", text: "This is my very first message" },
+    // ]);
   }
 }

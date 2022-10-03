@@ -86,14 +86,17 @@ class Sprite {
     // ? Uptick frame progress
     this.currentAnimationFrame += 1;
 
+    // ? reset back to start of frames
     if (this.frame === undefined) {
       this.currentAnimationFrame = 0;
     }
   }
 
   draw(ctx, cameraPerson) {
-    const x = this.gameObject.x - 8 + utils.withGrid(10.5) - cameraPerson.x;
-    const y = this.gameObject.y - 18 + utils.withGrid(6) - cameraPerson.y;
+    const mapXOffset = utils.withGrid(10.5) - cameraPerson.x; // ? to give illusion that
+    const mapYOffset = utils.withGrid(6) - cameraPerson.y; // ? map is moving and not the player
+    const x = this.gameObject.x - 8 + mapXOffset;
+    const y = this.gameObject.y - 18 + mapYOffset;
 
     this.isShadowLoaded && ctx.drawImage(this.shadow, x, y);
 
