@@ -34,7 +34,7 @@ class OverworldMap {
     return Object.values(this.gameObjects).find((obj) => {
       if (obj.x === x && obj.y === y) return true;
 
-      if (obj.intentPosition && obj.intentPosition[0] === x && obj.intentPosition[1] === y) return false;
+      if (obj.intentPosition && obj.intentPosition[0] === x && obj.intentPosition[1] === y) return true;
     });
   }
   mountObjects() {
