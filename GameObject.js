@@ -15,10 +15,11 @@ class GameObject {
     this.behaviourLoopIndex = 0; // ? keep track of which behaviour we're on
 
     this.talking = config.talking || [];
+
+    this.retryTimeout = null;
   }
   mount(map) {
     this.isMounted = true;
-    map.addWall(this.x, this.y);
 
     // ? If we gave a behaviour, kick off after a short delay
     // ? Leave a short timing gap for global overworld cutscreen loop
@@ -30,10 +31,18 @@ class GameObject {
   update() {}
 
   async doBehaviourEvent(map) {
+    // ? Don't do anything if there is no config/behaviour to do anything
+    if (this.behaviourLoop.length === 0) return;
+
     // ? Don't do anything if there is a more important cutscene
-    // ? Or if there is no config/behaviour to do anything
-    // ? or if they are standing
-    if (map.isCutscenePlaying || this.behaviourLoop.length === 0 || this.isStanding) return;
+    if (map.isCutscenePlaying) {
+      if (this.retryTimeout) clearTimeout(this.retryTimeout);
+
+      this.retryTimeout = setTimeout(() => {
+        this.doBehaviourEvent(map);
+      }, 1000);
+      return;
+    }
 
     // ? Setting up our event with relevant info
     let eventConfig = this.behaviourLoop[this.behaviourLoopIndex];

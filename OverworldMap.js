@@ -1,7 +1,9 @@
 class OverworldMap {
   constructor(config) {
     this.overworld = null; // ? backreference back to overworld
-    this.gameObjects = config.gameObjects;
+    this.gameObjects = {}; // ? Live objects are in here
+    this.configObjects = config.configObjects; // Configuration Content
+
     this.walls = config.walls || {};
     this.cutsceneSpaces = config.cutsceneSpaces || {};
 
@@ -23,16 +25,36 @@ class OverworldMap {
 
   isSpaceTaken(currentX, currentY, direction) {
     const { x, y } = utils.nextPosition(currentX, currentY, direction);
-    return this.walls[`${x},${y}`] || false;
+
+    if (this.walls[`${x},${y}`]) {
+      return true;
+    }
+
+    // ? Check for game objects at this position
+    return Object.values(this.gameObjects).find((obj) => {
+      if (obj.x === x && obj.y === y) return true;
+
+      if (obj.intentPosition && obj.intentPosition[0] === x && obj.intentPosition[1] === y) return false;
+    });
   }
   mountObjects() {
-    Object.keys(this.gameObjects).forEach((key) => {
-      // ? TODO: determine if object (e.g. a pizza slice?) should actually mount
-      let object = this.gameObjects[key];
+    Object.keys(this.configObjects).forEach((key) => {
+      let object = this.configObjects[key];
       object.id = key;
 
-      // ? Add collision box to object
-      object.mount(this);
+      // ? creating game object instance
+      let instance;
+      if (object.type === "Person") {
+        instance = new Person(object);
+      }
+      // if (object.type === "PizzaStone") {
+      //   instance = new PizzaStone(object);
+      // }
+
+      // ? mount game instance to the scene
+      this.gameObjects[key] = instance;
+      this.gameObjects[key].id = key;
+      instance.mount(this);
     });
   }
 
@@ -50,9 +72,6 @@ class OverworldMap {
     }
 
     this.isCutscenePlaying = false;
-
-    // ? Reset NPC to idle behaviour
-    Object.values(this.gameObjects).forEach((object) => object.doBehaviourEvent(this));
   }
 
   checkForActionCutscene() {
@@ -76,41 +95,24 @@ class OverworldMap {
       this.startCutscene(match[0].events);
     }
   }
-
-  addWall(x, y) {
-    this.walls[`${x},${y}`] = true;
-  }
-
-  removeWall(x, y) {
-    delete this.walls[`${x},${y}`];
-  }
-
-  moveWall(wasX, wasY, direction) {
-    this.removeWall(wasX, wasY);
-    const { x, y } = utils.nextPosition(wasX, wasY, direction);
-    this.addWall(x, y);
-  }
 }
 
 window.OverworldMaps = {
   DemoRoom: {
     lowerSrc: "/images/maps/DemoLower.png",
     upperSrc: "/images/maps/DemoUpper.png",
-    gameObjects: {
-      hero: new Person({
-        x: utils.withGrid(5),
-        y: utils.withGrid(6),
-        isPlayerControlled: true,
-      }),
-      npcA: new Person({
+    configObjects: {
+      hero: { type: "Person", x: utils.withGrid(5), y: utils.withGrid(6), isPlayerControlled: true },
+      npcA: {
+        type: "Person",
         x: utils.withGrid(7),
         y: utils.withGrid(9),
         src: "/images/characters/people/npc1.png",
         behaviourLoop: [
+          { type: "stand", direction: "right", time: 800 },
           { type: "stand", direction: "up", time: 800 },
           { type: "stand", direction: "left", time: 800 },
-          { type: "stand", direction: "right", time: 1200 },
-          { type: "stand", direction: "up", time: 300 },
+          { type: "stand", direction: "down", time: 800 },
         ],
         talking: [
           {
@@ -121,8 +123,9 @@ window.OverworldMaps = {
             ],
           },
         ],
-      }),
-      npcB: new Person({
+      },
+      npcB: {
+        type: "Person",
         x: utils.withGrid(8),
         y: utils.withGrid(5),
         src: "/images/characters/people/npc2.png",
@@ -135,7 +138,7 @@ window.OverworldMaps = {
             ],
           },
         ],
-      }),
+      },
     },
     walls: {
       // "16,16": true,
@@ -201,13 +204,10 @@ window.OverworldMaps = {
   Kitchen: {
     lowerSrc: "/images/maps/KitchenLower.png",
     upperSrc: "/images/maps/KitchenUpper.png",
-    gameObjects: {
-      hero: new Person({
-        x: utils.withGrid(3),
-        y: utils.withGrid(5),
-        isPlayerControlled: true,
-      }),
-      npcA: new Person({
+    configObjects: {
+      hero: { type: "Person", x: utils.withGrid(3), y: utils.withGrid(5), isPlayerControlled: true },
+      npcA: {
+        type: "Person",
         x: utils.withGrid(6),
         y: utils.withGrid(4),
         src: "/images/characters/people/npc4.png",
@@ -230,8 +230,9 @@ window.OverworldMaps = {
             ],
           },
         ],
-      }),
-      npcB: new Person({
+      },
+      npcB: {
+        type: "Person",
         x: utils.withGrid(10),
         y: utils.withGrid(8),
         src: "/images/characters/people/npc5.png",
@@ -259,7 +260,7 @@ window.OverworldMaps = {
             events: [{ type: "textMessage", text: "You made it!", faceHero: "npcB" }],
           },
         ],
-      }),
+      },
     },
     walls: {
       // "16,16": true,
