@@ -35,4 +35,7 @@ const utils = {
       }, ms);
     });
   },
+  randomFromArray(array) {
+    return array[Math.floor(Math.random() * array.length)];
+  },
 };

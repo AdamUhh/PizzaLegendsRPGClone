@@ -5,12 +5,13 @@ class Battle {
         {
           ...Pizzas.s001,
           team: "player",
-          hp: 50,
+          hp: 30,
           maxHp: 50,
           xp: 75,
           maxXp: 100,
           level: 1,
           status: null,
+          isPlayerControlled: true,
         },
         this
       ),
@@ -23,6 +24,7 @@ class Battle {
           xp: 20,
           maxXp: 100,
           level: 1,
+          status: null,
         },
         this
       ),
@@ -35,6 +37,7 @@ class Battle {
           xp: 30,
           maxXp: 100,
           level: 1,
+          status: null,
         },
         this
       ),
