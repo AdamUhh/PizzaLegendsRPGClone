@@ -5,15 +5,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pizza Legends RPG</title>
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
     <link href="styles/global.css" rel="stylesheet" />
     <link href="styles/TextMessage.css" rel="stylesheet" />
     <link href="styles/SceneTransition.css" rel="stylesheet" />
+    <!-- Battle CSS -->
+    <link href="styles/Battle.css" rel="stylesheet" />
+    <link href="styles/SubmissionMenu.css" rel="stylesheet" />
+    <link href="styles/Team.css" rel="stylesheet" />
+    <link href="styles/Combatant.css" rel="stylesheet" />
   </head>
   <body>
     <div class="game-container">
       <canvas class="game-canvas" width="352" height="198"></canvas>
     </div>
+
+    <!-- Content -->
+    <script src="Content/pizza.js"></script>
+    <script src="Content/actions.js"></script>
 
     <!-- Scripts -->
     <script src="utils.js"></script>
@@ -28,6 +37,16 @@
     <script src="KeyPressListener.js"></script>
     <script src="RevealingText.js"></script>
     <script src="SceneTransition.js"></script>
+
+    <!-- Battle -->
+    <script src="Battle/Battle.js"></script>
+    <script src="Battle/Combatant.js"></script>
+    <script src="Battle/SubmissionMenu.js"></script>
+    <script src="Battle/Team.js"></script>
+    <script src="Battle/TurnCycle.js"></script>
+    <script src="Battle/BattleEvent.js"></script>
+    <script src="Battle/BattleAnimations.js"></script>
+
     <script src="init.js"></script>
   </body>
 </html>
