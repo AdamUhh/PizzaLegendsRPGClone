@@ -3,9 +3,9 @@ class KeyPressListener {
     // ? ex: if you hold 'Enter' for the dialogue box, it will not spam through 
     // ? the text message until you release and press 'Enter' again
   constructor(keyCode, callback) {
-    let keySafe = true;
+    let keySafe = true; // ? used to prevent spam keypresses
     // ? these callback functions ('keydownFunction','keyupFunction') is saved to
-    // ? the class like this is to be able to unbind them later
+    // ? the class like this to be able to unbind them later
     this.keydownFunction = function (event) {
     if (event.code === keyCode) {
         if (keySafe) {

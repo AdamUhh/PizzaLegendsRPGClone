@@ -7,6 +7,7 @@ class KeyboardMenu {
   }
 
   setOptions(options) {
+    // ? setting the different options/events to be displayed for the player to choose
     this.options = options;
     this.element.innerHTML = this.options
       .map((option, index) => {
@@ -50,7 +51,7 @@ class KeyboardMenu {
     // ? Description box element
     this.descriptionElement = document.createElement("div");
     this.descriptionElement.classList.add("DescriptionBox");
-    this.descriptionElement.innerHTML = `<p>Information</p>`;
+    this.descriptionElement.innerHTML = `<p></p>`;
     this.descriptionElementText = this.descriptionElement.querySelector("p");
   }
 

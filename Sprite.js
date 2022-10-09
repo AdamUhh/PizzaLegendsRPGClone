@@ -17,7 +17,8 @@ class Sprite {
       this.isShadowLoaded = true;
     };
 
-    // ? Configure Animation and Initial State
+    // ? Configure Animation and Initial State from spritesheet coords 
+    // ? note: 16px = 1, 32px = 2, etc.
     this.animations = config.animations || {
       "idle-down": [[0, 0]],
       "idle-right": [[0, 1]],
@@ -48,7 +49,7 @@ class Sprite {
         [0, 3],
       ],
     };
-    this.currentAnimation = "idle-right"; //config.currentAnimation || "idle-down";
+    this.currentAnimation = "idle-right";
     this.currentAnimationFrame = 0; // ? which animation (frame) to show
 
     // ? How many game loop frames do we want to show this one sprite image
@@ -76,6 +77,7 @@ class Sprite {
   updateAnimationProgress() {
     // ? Downtick frame progress
     if (this.animationFrameProgress > 0) {
+      // ? basically, if there is still time until the next animation should play
       this.animationFrameProgress -= 1;
       return;
     }
@@ -84,7 +86,7 @@ class Sprite {
     this.animationFrameProgress = this.animationFrameLimit;
 
     // ? Uptick frame progress
-    this.currentAnimationFrame += 1;
+    this.currentAnimationFrame += 1; // ? next animation (for this.animations data)
 
     // ? reset back to start of frames
     if (this.frame === undefined) {

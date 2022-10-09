@@ -1,8 +1,8 @@
 class OverworldMap {
   constructor(config) {
-    this.overworld = null; // ? backreference back to overworld
+    this.overworld = null; // ? backreference back to overworld, kinda useless
     this.gameObjects = {}; // ? Live objects are in here
-    this.configObjects = config.configObjects; // Configuration Content
+    this.configObjects = config.configObjects; // Configuration Content (player, npcs and pizzaStones
 
     this.walls = config.walls || {};
     this.cutsceneSpaces = config.cutsceneSpaces || {};
@@ -17,35 +17,51 @@ class OverworldMap {
 
   drawLowerImage(ctx, cameraPerson) {
     // ? utils.withGrid(10.5) - cameraPerson.x is the MapXOffset
-    ctx.drawImage(this.lowerImage, utils.withGrid(10.5) - cameraPerson.x, utils.withGrid(6) - cameraPerson.y);
+    ctx.drawImage(
+      this.lowerImage,
+      utils.withGrid(10.5) - cameraPerson.x,
+      utils.withGrid(6) - cameraPerson.y
+    );
   }
   drawUpperImage(ctx, cameraPerson) {
-    ctx.drawImage(this.upperImage, utils.withGrid(10.5) - cameraPerson.x, utils.withGrid(6) - cameraPerson.y);
+    ctx.drawImage(
+      this.upperImage,
+      utils.withGrid(10.5) - cameraPerson.x,
+      utils.withGrid(6) - cameraPerson.y
+    );
   }
 
   isSpaceTaken(currentX, currentY, direction) {
     const { x, y } = utils.nextPosition(currentX, currentY, direction);
 
+    // ? if there is a wall infront of object (i.e. player, npc), 
+    // ? return true, which will mean that they cannot move forwards
     if (this.walls[`${x},${y}`]) {
       return true;
     }
 
-    // ? Check for game objects at this position
+    // ? Check if there are any gameObjects (i.e. player, npc) at this position
     return Object.values(this.gameObjects).find((obj) => {
+      // ? obj are the live object (ex: npcs) on the screen with their current x,y data
       if (obj.x === x && obj.y === y) return true;
 
-      if (obj.intentPosition && obj.intentPosition[0] === x && obj.intentPosition[1] === y) return true;
+      // ? prevents movement while in movement transition - (prevents player from glitching through npc while npc is moving)
+      // ? this is basically saying to put a fake 'wall' infront of where the object wants to go, as long as it was empty
+      // ? when the request went through
+      if (obj.intentPosition && obj.intentPosition[0] === x && obj.intentPosition[1] === y)
+        return true;
     });
   }
   mountObjects() {
+    // ? i.e. for each player, npc, pizzaStone
     Object.keys(this.configObjects).forEach((key) => {
-      let object = this.configObjects[key];
-      object.id = key;
+      let object = this.configObjects[key]; // ? ex: npcA.values
+      object.id = key; // ? ex: npcA
 
       // ? creating game object instance
       let instance;
       if (object.type === "Person") {
-        instance = new Person(object);
+        instance = new Person(object); // ? ex: object = hero.values
       }
       // if (object.type === "PizzaStone") {
       //   instance = new PizzaStone(object);
@@ -54,45 +70,51 @@ class OverworldMap {
       // ? mount game instance to the scene
       this.gameObjects[key] = instance;
       this.gameObjects[key].id = key;
-      instance.mount(this);
+      instance.mount(this); // ? this is basically Person.mount(OverworldMap) -> GameObject.mount(OverworldMap)
     });
   }
 
   async startCutscene(events) {
+    // ? cutscene starts when player walks into a cutscene space or talks to an npc
     this.isCutscenePlaying = true;
 
     // ? Start a loop of async events
     // ? await each event
     for (let i = 0; i < events.length; i++) {
       const eventHandler = new OverworldEvent({
-        event: events[i],
+        event: events[i], // ? ex: event could be a dialogue, battle, walk or stand
         map: this,
       });
-      await eventHandler.init();
+      await eventHandler.init(); // ? basically await OverworldEvent.init()
     }
 
+    // ? after all events are finished, cutscene is no longer active
     this.isCutscenePlaying = false;
   }
 
   checkForActionCutscene() {
-    const hero = this.gameObjects["hero"];
-    const nextCoords = utils.nextPosition(hero.x, hero.y, hero.direction);
-    // ? iterate through game objects and check if there is one infront of the hero
+    // ? basically checks if the player triggered a cutscene (not by walking ontop of a cutscene space)
+    const hero = this.gameObjects["hero"]; // ? get current data of hero
+    // ? get x and y coords of the spot infront of the hero's current direction
+    const nextCoords = utils.nextPosition(hero.x, hero.y, hero.direction); 
+    // ? iterate through game objects and check if there is an object (i.e. npcA) infront of the hero
     const match = Object.values(this.gameObjects).find((object) => {
       return `${object.x},${object.y}` === `${nextCoords.x},${nextCoords.y}`;
     });
     // ? make sure that we dont have a cutscene playing already
     // ? and that there is an object infront of hero
+    // ? and that the object (i.e. npcA) has a talking option
     if (!this.isCutscenePlaying && match && match.talking.length) {
-      this.startCutscene(match.talking[0].events);
+      this.startCutscene(match.talking[0].events); // ? start a cutscene using npcA 'talking -> events' data 
     }
   }
 
   checkForFootstepCutscene() {
-    const hero = this.gameObjects["hero"];
-    const match = this.cutsceneSpaces[`${hero.x},${hero.y}`];
+    // ? basically checks if player is ontop of a cutscene space and starts a cutscene
+    const hero = this.gameObjects["hero"]; // ? get current data of hero
+    const match = this.cutsceneSpaces[`${hero.x},${hero.y}`]; // ? is hero ontop of a cutscene space
     if (!this.isCutscenePlaying && match) {
-      this.startCutscene(match[0].events);
+      this.startCutscene(match[0].events); // ? start a cutscene
     }
   }
 }
@@ -102,7 +124,12 @@ window.OverworldMaps = {
     lowerSrc: "/images/maps/DemoLower.png",
     upperSrc: "/images/maps/DemoUpper.png",
     configObjects: {
-      hero: { type: "Person", x: utils.withGrid(5), y: utils.withGrid(6), isPlayerControlled: true },
+      hero: {
+        type: "Person",
+        x: utils.withGrid(5),
+        y: utils.withGrid(6),
+        isPlayerControlled: true,
+      },
       npcA: {
         type: "Person",
         x: utils.withGrid(7),
@@ -118,8 +145,9 @@ window.OverworldMaps = {
           {
             events: [
               { type: "textMessage", text: "I'm busy...", faceHero: "npcA" },
-              { type: "textMessage", text: "Go away!" },
-              { who: "hero", type: "walk", direction: "up" },
+              { type: "battle", enemyId: "beth" },
+              // { type: "textMessage", text: "Go away!" },
+              // { who: "hero", type: "walk", direction: "up" },
             ],
           },
         ],
@@ -128,13 +156,13 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(8),
         y: utils.withGrid(5),
-        src: "/images/characters/people/npc2.png",
-        behaviourLoop: [{ type: "stand", direction: "left" }],
+        src: "/images/characters/people/erio.png",
+        direction: "left",
         talking: [
           {
             events: [
-              { type: "textMessage", text: "If I catch you trying to enter...", faceHero: "npcB" },
-              { type: "textMessage", text: "Well, you better hope I don't!" },
+              { type: "textMessage", text: "Bahahaha!", faceHero: "npcB" },
+              { type: "battle", enemyId: "erio" },
             ],
           },
         ],
@@ -189,6 +217,7 @@ window.OverworldMaps = {
             { who: "npcB", type: "stand", direction: "up", time: 200 },
             { type: "textMessage", text: "You can't be in there!" },
             { who: "npcB", type: "walk", direction: "right" },
+            { who: "npcB", type: "stand", direction: "left" },
             { who: "hero", type: "walk", direction: "down" },
             { who: "hero", type: "walk", direction: "left" },
           ],
@@ -205,7 +234,12 @@ window.OverworldMaps = {
     lowerSrc: "/images/maps/KitchenLower.png",
     upperSrc: "/images/maps/KitchenUpper.png",
     configObjects: {
-      hero: { type: "Person", x: utils.withGrid(3), y: utils.withGrid(5), isPlayerControlled: true },
+      hero: {
+        type: "Person",
+        x: utils.withGrid(3),
+        y: utils.withGrid(5),
+        isPlayerControlled: true,
+      },
       npcA: {
         type: "Person",
         x: utils.withGrid(6),

@@ -1,9 +1,16 @@
-class Combantant {
+class Combatant {
+  // ? will basically control and display
+  // ? the pizzas hud on the screen
   constructor(config, battle) {
     this.battle = battle;
+    // ? for each key in config
+    // ? example of the object is given inside Battle.js (addCombatant())
     Object.keys(config).forEach((key) => {
+      // ? create a (class) variable
       this[key] = config[key];
     });
+    // ? if no hp is defined, use maxHp
+    this.hp = typeof this.hp === "undefined" ? this.maxHp : this.hp;
   }
 
   get hpPercent() {
@@ -15,6 +22,20 @@ class Combantant {
   }
   get isActive() {
     return this.battle.activeCombatants[this.team] === this.id;
+  }
+  get givesXp() {
+    // ? returns a value to be used later in TurnCycle.js
+    // ? when the enemy dies, a new event called giveXp (not givesXp) 
+    // ? is used inside TurnCycle.js -> BattleEvent.js, 
+    // ? using this value (from givesXp)
+
+    // ? note: this is not a very good leveling system ;p
+    // ? if level: 1, returns 20
+    // ? if level: 2, returns 40
+    return this.level * 20;
+
+    // ? a different leveling system could be where it takes into account
+    // ? the enemy level, player level, and does some calculations
   }
 
   createElement() {
@@ -79,18 +100,22 @@ class Combantant {
   }
 
   getReplacedEvents(originalEvents) {
+    // ? this overrides the action that the player took
+    // ? so for "clumsy", this will prevent the user from attacking
     if (this.status?.type === "clumsy" && utils.randomFromArray([true, false, false])) {
-      return [{ type: "textMessage", text: `${this.name} flops over!` }];
+      return [{ type: "textMessage", text: `${this.name} flops over! Attack Failed!` }];
     }
     return originalEvents;
   }
 
   getPostEvents() {
+    // ? Do events after the original turn submission
+    // ? so if the player used "saucy" attack, it will add the events below
     if (this.status?.type === "saucy") {
       return [
         {
           type: "textMessage",
-          text: "Feelin' saucy!",
+          text: "Feelin' saucy! Gain +5 health",
         },
         {
           type: "stateChange",

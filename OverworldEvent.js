@@ -5,7 +5,8 @@ class OverworldEvent {
   }
 
   stand(resolve) {
-    const who = this.map.gameObjects[this.event.who];
+    const who = this.map.gameObjects[this.event.who]; // ? ex: npcA
+    // ? this is basically Person (npcA).startBehaviour
     who.startBehaviour(
       { map: this.map },
       {
@@ -13,6 +14,8 @@ class OverworldEvent {
         direction: this.event.direction,
         time: this.event.time,
       }
+      // ? basically, stand facing left direction for 300ms before next behaviour goes through
+      // ? ex: {type: "stand", direction: "left", time: 300}
     );
 
     // ? Set up a handler to complete when correct person is done standing
@@ -28,7 +31,7 @@ class OverworldEvent {
   }
 
   walk(resolve) {
-    const who = this.map.gameObjects[this.event.who];
+    const who = this.map.gameObjects[this.event.who]; // ? ex: npcA
     who.startBehaviour(
       { map: this.map },
       {
@@ -53,6 +56,7 @@ class OverworldEvent {
   textMessage(resolve) {
     if (this.event.faceHero) {
       const obj = this.map.gameObjects[this.event.faceHero];
+      // ? used to get an npc to face the player when talking to them (npcA)
       obj.direction = utils.oppositeDirection(this.map.gameObjects["hero"].direction);
     }
 
@@ -80,13 +84,27 @@ class OverworldEvent {
   }
 
   battle(resolve) {
+    const sceneTransition = new SceneTransition();
+
     const battle = new Battle({
-      onComplete: () => {
-        resolve();
+      // ? Enemies is from window.Enemies inside /Content/enemies.js
+      // ? this.event.enemyId is from the player interaction with an npc,
+      // ? from OverworldMap.js (startCutscene())
+      enemy: Enemies[this.event.enemyId],
+      onComplete: (element) => {
+        sceneTransition.init(document.querySelector(".game-container"), () => {
+          resolve();
+
+          sceneTransition.fadeOut(element);
+        });
       },
     });
 
-    battle.init(document.querySelector(".game-container"));
+    sceneTransition.init(document.querySelector(".game-container"), () => {
+      battle.init(document.querySelector(".game-container"));
+
+      sceneTransition.fadeOut();
+    });
   }
 
   init() {

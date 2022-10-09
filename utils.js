@@ -23,9 +23,13 @@ const utils = {
     return "up";
   },
   emitEvent(name, detail) {
+    // ? CustomEvent is built in JS function - its basically an eventListener
+    // ? ex: name:"PersonStandComplete", detail: "whoId: npcA" 
     const event = new CustomEvent(name, {
       detail,
     });
+    // ? then, the "PersonStandComplete" is dispatched, which is then caught by the handler
+    // ? inside OverworldEvent.js, which then resolves the "PersonStandComplete" event
     document.dispatchEvent(event);
   },
   wait(ms) {

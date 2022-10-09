@@ -7,8 +7,20 @@ class SceneTransition {
     this.element.classList.add("SceneTransition");
   }
 
-  fadeOut() {
+  fadeOut(element) {
+    // ? used to fade-out animation for smoothness
     this.element.classList.add("fade-out");
+
+    this.element.addEventListener(
+      "animationstart",
+      () => {
+        if (element) {
+          element.remove();
+        }
+      },
+      { once: true }
+    );
+
     this.element.addEventListener(
       "animationend",
       () => {

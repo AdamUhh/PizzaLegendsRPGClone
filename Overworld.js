@@ -1,9 +1,9 @@
 class Overworld {
-  constructor(config) {
-    this.element = config.element;
+  constructor({ element }) {
+    this.element = element;
     this.canvas = this.element.querySelector(".game-canvas");
     this.ctx = this.canvas.getContext("2d");
-    this.map = null;
+    this.map = null; // ? map data to be used
   }
 
   startGameLoop() {
@@ -49,7 +49,7 @@ class Overworld {
 
   bindActionInput() {
     new KeyPressListener("Enter", () => {
-      // ? Is there a person here to talk to?
+      // ? Is there an npc for the player to talk to?
       this.map.checkForActionCutscene();
     });
   }
@@ -64,22 +64,22 @@ class Overworld {
   }
 
   startMap(mapConfig) {
-    this.map = new OverworldMap(mapConfig);
-    this.map.overworld = this;
-    this.map.mountObjects();
+    this.map = new OverworldMap(mapConfig); // ? Create Map
+    this.map.overworld = this; // ? used as backreference. kinda useless tbh
+    this.map.mountObjects(); // ? used to create/mount player, npc and pizzaStone to screen
   }
 
   init() {
-    this.startMap(window.OverworldMaps.Kitchen);
-    this.bindActionInput();
-    this.bindHeroPositionCheck();
+    this.startMap(window.OverworldMaps.DemoRoom); // ? data located in OverworldMap.js
+    this.bindActionInput(); // ? event listener for keypress:"Enter", used for interactions with NPCs
+    this.bindHeroPositionCheck(); // ?
 
-    this.directionInput = new DirectionInput();
+    this.directionInput = new DirectionInput(); // ? Player movement
     this.directionInput.init();
     this.startGameLoop();
 
-    this.map.startCutscene([
-      { type: "battle" },
-    ]);
+    // this.map.startCutscene([
+    //   { type: "battle", enemyId: "beth" },
+    // ]);
   }
 }
