@@ -19,13 +19,10 @@ body {
   overflow: hidden;
   font-family: "Poppins", sans-serif;
 }
+
 .how-to-play {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
   text-align: center;
-  font-size: 12px;
+  font-size: 4.5px;
   color: #fff;
 }
 
