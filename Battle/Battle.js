@@ -1,6 +1,7 @@
 class Battle {
-  constructor({ enemy, onComplete }) {
+  constructor({ enemy, arena, onComplete }) {
     this.enemy = enemy;
+    this.arena = arena;
     this.onComplete = onComplete;
 
     this.combatants = {};
@@ -89,6 +90,12 @@ class Battle {
   createElement() {
     this.element = document.createElement("div");
     this.element.classList.add("Battle");
+
+    // If provided, add a CSS class for setting the arena background
+    if (this.arena) {
+      this.element.classList.add(this.arena);
+    }
+
     this.element.innerHTML = `
     <div class="Battle_hero">
         <img src="${"/images/characters/people/hero.png"}" alt="Hero" />

@@ -75,22 +75,62 @@ class Overworld {
     });
   }
 
-  startMap(mapConfig) {
+  startMap(mapConfig, heroInitialState = null) {
     this.map = new OverworldMap(mapConfig); // ? Create Map
     this.map.overworld = this; // ? used as backreference. kinda useless tbh
     this.map.mountObjects(); // ? used to create/mount player, npc and pizzaStone to screen
+
+    const { hero } = this.map.gameObjects;
+    if (heroInitialState) {
+      hero.x = heroInitialState.x;
+      hero.y = heroInitialState.y;
+      hero.direction = heroInitialState.direction;
+    }
+
+    this.progress.mapId = mapConfig.id;
+    this.progress.startingHeroX = hero.x;
+    this.progress.startingHeroY = hero.y;
+    this.progress.startingHeroDirection = hero.direction;
   }
 
-  init() {
-    this.hud = new Hud();
-    this.hud.init(document.querySelector(".game-container"));
+  async init() {
+    const container = document.querySelector(".game-container");
 
-    this.startMap(window.OverworldMaps.DemoRoom); // ? data located in OverworldMap.js
+    // ? Create a new progress tracker
+    this.progress = new Progress();
+
+    // ? Show the title screen
+    this.titleScreen = new TitleScreen({
+      progress: this.progress,
+    });
+    const useSaveFile = await this.titleScreen.init(container);
+
+    // ? Potentially load saved data
+    let initialHeroState = null;
+    if (useSaveFile) {
+      this.progress.load();
+      initialHeroState = {
+        x: this.progress.startingHeroX,
+        y: this.progress.startingHeroY,
+        direction: this.progress.startingHeroDirection,
+      };
+    }
+
+    // ? Load the HUD
+    this.hud = new Hud();
+    this.hud.init(container);
+
+    // ? Start the first map
+    this.startMap(window.OverworldMaps[this.progress.mapId], initialHeroState); // ? data located in OverworldMap.js
+
+    // ? Create controls
     this.bindActionInput(); // ? event listener for keypress:"Enter", used for interactions with NPCs
     this.bindHeroPositionCheck();
 
     this.directionInput = new DirectionInput(); // ? Player movement
     this.directionInput.init();
+
+    // ? Start game
     this.startGameLoop();
 
     // this.map.startCutscene([

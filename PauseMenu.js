@@ -1,5 +1,6 @@
 class PauseMenu {
-  constructor({ onComplete }) {
+  constructor({ progress, onComplete }) {
+    this.progress = progress;
     this.onComplete = onComplete;
   }
 
@@ -25,7 +26,10 @@ class PauseMenu {
         {
           label: "Save",
           description: "Save your progress",
-          handler: () => {},
+          handler: () => {
+            this.progress.save();
+            this.close();
+          },
         },
         {
           label: "Close",
@@ -61,9 +65,8 @@ class PauseMenu {
         label: "Move to front",
         description: "Move this pizza to the front of the list",
         handler: () => {
-            playerState.moveToFront(pageKey)
+          playerState.moveToFront(pageKey);
           this.keyboardMenu.setOptions(this.getOptions("root"));
-
         },
       },
       {
@@ -74,7 +77,6 @@ class PauseMenu {
         },
       },
     ];
-
   }
 
   createElement() {

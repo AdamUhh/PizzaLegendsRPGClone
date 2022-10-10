@@ -76,7 +76,11 @@ class OverworldEvent {
     const sceneTransition = new SceneTransition();
     sceneTransition.init(document.querySelector(".game-container"), () => {
       // ? Change map
-      this.map.overworld.startMap(window.OverworldMaps[this.event.map]);
+      this.map.overworld.startMap(window.OverworldMaps[this.event.map], {
+        x: this.event.x,
+        y: this.event.y,
+        direction: this.event.direction,
+      });
       resolve();
 
       sceneTransition.fadeOut();
@@ -86,6 +90,7 @@ class OverworldEvent {
   pause(resolve) {
     this.map.isPaused = true;
     const menu = new PauseMenu({
+      progress: this.map.overworld.progress,
       onComplete: () => {
         resolve();
         this.map.isPaused = false;
@@ -103,6 +108,7 @@ class OverworldEvent {
       // ? this.event.enemyId is from the player interaction with an npc,
       // ? from OverworldMap.js (startCutscene())
       enemy: Enemies[this.event.enemyId],
+      arena: this.event.arena || null,
       onComplete: (element, didWin) => {
         sceneTransition.init(document.querySelector(".game-container"), () => {
           // ? resolve will be in OverworldMap.js
@@ -123,7 +129,7 @@ class OverworldEvent {
   addStoryFlag(resolve) {
     window.playerState.storyFlags[this.event.flag] = true;
     resolve();
-}
+  }
 
   craftingMenu(resolve) {
     const menu = new CraftingMenu({

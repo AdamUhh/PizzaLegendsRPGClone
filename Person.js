@@ -3,14 +3,17 @@ class Person extends GameObject {
     super(config);
     this.isPlayerControlled = config.isPlayerControlled || false;
     this.movingProgressRemaining = 0; // ? how many moves/pixels left for object to move
+
     this.isStanding = false;
     this.intentPosition = null; // ? [x,y]
+
     this.directionUpdate = {
       up: ["y", -1],
       down: ["y", 1],
       left: ["x", -1],
       right: ["x", 1],
     };
+    this.standBehaviourTimeout;
   }
 
   // ? called inside Overworld.js (startGameLoop())
@@ -60,12 +63,26 @@ class Person extends GameObject {
       this.updateSprite();
     }
 
+    // if (behaviour.type === "stand") {
+    //   this.isStanding = true;
+    //   setTimeout(() => {
+    //     utils.emitEvent("PersonStandComplete", {
+    //       whoId: this.id, // ? ex: npcA
+    //     });
+    //     this.isStanding = false;
+    //   }, behaviour.time);
+    // }
+
     if (behaviour.type === "stand") {
       this.isStanding = true;
-      setTimeout(() => {
+
+      if (this.standBehaviourTimeout) {
+        clearTimeout(this.standBehaviourTimeout);
+      }
+      this.standBehaviourTimeout = setTimeout(() => {
         // ? basically creates an event for an eventListener to listen to and handle (inside OverworldEvent.js)
         utils.emitEvent("PersonStandComplete", {
-          whoId: this.id, // ? ex: npcA
+          whoId: this.id,
         });
         this.isStanding = false;
       }, behaviour.time);

@@ -170,10 +170,12 @@ class TurnCycle {
   }
 
   async init() {
-    await this.onNewEvent({
-      type: "textMessage",
-      text: `${this.battle.enemy.name} ${this.battle.enemy.battleText}`,
-    });
+    if (this.battle.enemy && this.battle.enemy?.battleText) {
+      await this.onNewEvent({
+        type: "textMessage",
+        text: `${this.battle.enemy.name} ${this.battle.enemy.battleText}`,
+      });
+    }
 
     // ? Start the first turn!
     this.turn();

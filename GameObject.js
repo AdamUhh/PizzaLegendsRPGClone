@@ -29,6 +29,7 @@ class GameObject {
       this.doBehaviourEvent(map);
     }, 10);
   }
+  
   update() {}
 
   async doBehaviourEvent(map) {
