@@ -21,12 +21,12 @@ class Combatant {
     return (this.xp / this.maxXp) * 100;
   }
   get isActive() {
-    return this.battle.activeCombatants[this.team] === this.id;
+    return this.battle?.activeCombatants[this.team] === this.id;
   }
   get givesXp() {
     // ? returns a value to be used later in TurnCycle.js
-    // ? when the enemy dies, a new event called giveXp (not givesXp) 
-    // ? is used inside TurnCycle.js -> BattleEvent.js, 
+    // ? when the enemy dies, a new event called giveXp (not givesXp)
+    // ? is used inside TurnCycle.js -> BattleEvent.js,
     // ? using this value (from givesXp)
 
     // ? note: this is not a very good leveling system ;p
@@ -102,7 +102,7 @@ class Combatant {
   getReplacedEvents(originalEvents) {
     // ? this overrides the action that the player took
     // ? so for "clumsy", this will prevent the user from attacking
-    if (this.status?.type === "clumsy" && utils.randomFromArray([true, false, false])) {
+    if (this.status?.type === "clumsy" && utils.randomFromArray([true, false, false, false])) {
       return [{ type: "textMessage", text: `${this.name} flops over! Attack Failed!` }];
     }
     return originalEvents;

@@ -17,7 +17,7 @@ class Sprite {
       this.isShadowLoaded = true;
     };
 
-    // ? Configure Animation and Initial State from spritesheet coords 
+    // ? Configure Animation and Initial State from spritesheet coords
     // ? note: 16px = 1, 32px = 2, etc.
     this.animations = config.animations || {
       "idle-down": [[0, 0]],
@@ -49,7 +49,7 @@ class Sprite {
         [0, 3],
       ],
     };
-    this.currentAnimation = "idle-right";
+    this.currentAnimation = config.currentAnimation || "idle-down";
     this.currentAnimationFrame = 0; // ? which animation (frame) to show
 
     // ? How many game loop frames do we want to show this one sprite image

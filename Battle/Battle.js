@@ -161,10 +161,13 @@ class Battle {
           playerState.items = playerState.items.filter((item) => {
             return !this.usedInstanceIds[item.instanceId];
           });
+
+          // ? Send signal to update overworld hud
+          utils.emitEvent("PlayerStateUpdated");
         }
 
         // ? Battle has been completed, go back to overworld map
-        this.onComplete(this.element);
+        this.onComplete(this.element, winner === "player");
       },
     });
 

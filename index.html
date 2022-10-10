@@ -6,15 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pizza Legends RPG</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
-    <link href="styles/global.css" rel="stylesheet" />
-    <link href="styles/TextMessage.css" rel="stylesheet" />
-    <link href="styles/SceneTransition.css" rel="stylesheet" />
-    <link href="styles/KeyboardMenu.css" rel="stylesheet" />
-    <!-- Battle CSS -->
-    <link href="styles/Battle.css" rel="stylesheet" />
-    <link href="styles/SubmissionMenu.css" rel="stylesheet" />
-    <link href="styles/Team.css" rel="stylesheet" />
-    <link href="styles/Combatant.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Overworld styles -->
+    <link href="styles/global.css" type="text/css" rel="stylesheet" />
+    <link href="styles/TextMessage.css" type="text/css" rel="stylesheet" />
+    <link href="styles/SceneTransition.css" type="text/css" rel="stylesheet" />
+    <link href="styles/KeyboardMenu.css" type="text/css" rel="stylesheet" />
+    <link href="styles/Hud.css" type="text/css" rel="stylesheet" />
+    <link href="styles/TitleScreen.css" type="text/css" rel="stylesheet" />
+    <!-- Battle css -->
+    <link href="styles/Battle.css" type="text/css" rel="stylesheet" />
+    <link href="styles/Combatant.css" type="text/css" rel="stylesheet" />
+    <link href="styles/SubmissionMenu.css" type="text/css" rel="stylesheet" />
+    <link href="styles/Team.css" type="text/css" rel="stylesheet" />
+    <link href="styles/Menus.css" type="text/css" rel="stylesheet" />
   </head>
   <body>
     <div class="game-container">
@@ -25,10 +36,9 @@
     <script src="Content/pizza.js"></script>
     <script src="Content/actions.js"></script>
     <script src="Content/enemies.js"></script>
-    
+
     <!-- State -->
     <script src="State/PlayerState.js"></script>
-
 
     <!-- Scripts -->
     <script src="utils.js"></script>
@@ -36,6 +46,7 @@
     <script src="Overworld.js"></script>
     <script src="GameObject.js"></script>
     <script src="Person.js"></script>
+    <script src="PizzaStone.js"></script>
     <script src="Sprite.js"></script>
     <script src="OverworldMap.js"></script>
     <script src="OverworldEvent.js"></script>
@@ -44,6 +55,9 @@
     <script src="RevealingText.js"></script>
     <script src="SceneTransition.js"></script>
     <script src="KeyboardMenu.js"></script>
+    <script src="Hud.js"></script>
+    <script src="PauseMenu.js"></script>
+    <script src="CraftingMenu.js"></script>
 
     <!-- Battle -->
     <script src="Battle/Battle.js"></script>

@@ -1,33 +1,22 @@
 .SceneTransition {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position:absolute;
+  left:0;
+  top:0;
+  right:0;
+  bottom:0;
   background: #fff;
   opacity: 0;
   animation: scene-transition-fade-in 0.4s forwards;
-  z-index: 10;
 }
-
 .SceneTransition.fade-out {
   animation: scene-transition-fade-out 0.4s forwards;
-  z-index: 10;
 }
 
 @keyframes scene-transition-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 @keyframes scene-transition-fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }

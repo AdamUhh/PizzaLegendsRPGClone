@@ -1,6 +1,6 @@
 :root {
   --border-color: #291d4d;
-  --dialogue-background: #fff3b4;
+  --dialog-background: #fff3b4;
 
   --menu-background: #ffe8d2;
   --menu-border-color: #a48465;
@@ -13,21 +13,32 @@
 }
 
 body {
-  background-color: #333;
-  margin: 0;
+  background: #333;
   padding: 0;
+  margin: 0;
   overflow: hidden;
+  font-family: "Poppins", sans-serif;
+}
+.how-to-play {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  font-size: 12px;
+  color: #fff;
 }
 
 .game-container {
   position: relative;
+  /* background: #9ae2ff; */
   width: 352px;
   height: 198px;
   margin: 0 auto;
-  margin-top: 20px;
-  outline: 1px solid white;
+  outline: 1px solid #fff;
+  border-radius: 2px;
 
-  transform: scale(3) translateY(50%);
+  transform: scale(4) translateY(50%);
 }
 
 .game-container canvas {

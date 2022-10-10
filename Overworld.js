@@ -40,9 +40,11 @@ class Overworld {
       // ? Draw Upper Layer
       this.map.drawUpperImage(this.ctx, cameraPerson);
 
-      requestAnimationFrame(() => {
-        step();
-      });
+      if (!this.map.isPaused) {
+        requestAnimationFrame(() => {
+          step();
+        });
+      }
     };
     step();
   }
@@ -51,6 +53,16 @@ class Overworld {
     new KeyPressListener("Enter", () => {
       // ? Is there an npc for the player to talk to?
       this.map.checkForActionCutscene();
+    });
+
+    new KeyPressListener("Escape", () => {
+      if (!this.map.isCutscenePlaying) {
+        this.map.startCutscene([
+          {
+            type: "pause",
+          },
+        ]);
+      }
     });
   }
 
@@ -70,9 +82,12 @@ class Overworld {
   }
 
   init() {
+    this.hud = new Hud();
+    this.hud.init(document.querySelector(".game-container"));
+
     this.startMap(window.OverworldMaps.DemoRoom); // ? data located in OverworldMap.js
     this.bindActionInput(); // ? event listener for keypress:"Enter", used for interactions with NPCs
-    this.bindHeroPositionCheck(); // ?
+    this.bindHeroPositionCheck();
 
     this.directionInput = new DirectionInput(); // ? Player movement
     this.directionInput.init();

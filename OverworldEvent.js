@@ -83,6 +83,18 @@ class OverworldEvent {
     });
   }
 
+  pause(resolve) {
+    this.map.isPaused = true;
+    const menu = new PauseMenu({
+      onComplete: () => {
+        resolve();
+        this.map.isPaused = false;
+        this.map.overworld.startGameLoop();
+      },
+    });
+    menu.init(document.querySelector(".game-container"));
+  }
+
   battle(resolve) {
     const sceneTransition = new SceneTransition();
 
@@ -91,9 +103,10 @@ class OverworldEvent {
       // ? this.event.enemyId is from the player interaction with an npc,
       // ? from OverworldMap.js (startCutscene())
       enemy: Enemies[this.event.enemyId],
-      onComplete: (element) => {
+      onComplete: (element, didWin) => {
         sceneTransition.init(document.querySelector(".game-container"), () => {
-          resolve();
+          // ? resolve will be in OverworldMap.js
+          resolve(didWin ? "WON_BATTLE" : "LOSE_BATTLE");
 
           sceneTransition.fadeOut(element);
         });
@@ -105,6 +118,21 @@ class OverworldEvent {
 
       sceneTransition.fadeOut();
     });
+  }
+
+  addStoryFlag(resolve) {
+    window.playerState.storyFlags[this.event.flag] = true;
+    resolve();
+}
+
+  craftingMenu(resolve) {
+    const menu = new CraftingMenu({
+      pizzas: this.event.pizzas,
+      onComplete: () => {
+        resolve();
+      },
+    });
+    menu.init(document.querySelector(".game-container"));
   }
 
   init() {

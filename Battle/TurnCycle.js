@@ -82,7 +82,7 @@ class TurnCycle {
         // ? get the active pizza of the player team
         const playerActivePizzaId = this.battle.activeCombatants.player;
         const xp = submission.target.givesXp;
-        
+
         await this.onNewEvent({
           type: "textMessage",
           text: `Gained ${xp} xp`,

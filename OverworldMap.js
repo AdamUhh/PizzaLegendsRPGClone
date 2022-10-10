@@ -1,6 +1,6 @@
 class OverworldMap {
   constructor(config) {
-    this.overworld = null; // ? backreference back to overworld, kinda useless
+    this.overworld = null; // ? backreference back to overworld (used for PauseMenu in OverworldEvent.js)
     this.gameObjects = {}; // ? Live objects are in here
     this.configObjects = config.configObjects; // Configuration Content (player, npcs and pizzaStones
 
@@ -13,6 +13,7 @@ class OverworldMap {
     this.upperImage.src = config.upperSrc;
 
     this.isCutscenePlaying = false;
+    this.isPaused = false;
   }
 
   drawLowerImage(ctx, cameraPerson) {
@@ -34,7 +35,7 @@ class OverworldMap {
   isSpaceTaken(currentX, currentY, direction) {
     const { x, y } = utils.nextPosition(currentX, currentY, direction);
 
-    // ? if there is a wall infront of object (i.e. player, npc), 
+    // ? if there is a wall infront of object (i.e. player, npc),
     // ? return true, which will mean that they cannot move forwards
     if (this.walls[`${x},${y}`]) {
       return true;
@@ -63,9 +64,9 @@ class OverworldMap {
       if (object.type === "Person") {
         instance = new Person(object); // ? ex: object = hero.values
       }
-      // if (object.type === "PizzaStone") {
-      //   instance = new PizzaStone(object);
-      // }
+      if (object.type === "PizzaStone") {
+        instance = new PizzaStone(object);
+      }
 
       // ? mount game instance to the scene
       this.gameObjects[key] = instance;
@@ -85,7 +86,15 @@ class OverworldMap {
         event: events[i], // ? ex: event could be a dialogue, battle, walk or stand
         map: this,
       });
-      await eventHandler.init(); // ? basically await OverworldEvent.init()
+
+      const result = await eventHandler.init(); // ? basically await OverworldEvent.init()
+
+      if (result === "LOSE_BATTLE") {
+        // ? if player lost, stop here and dont progress the story
+        // ? basically, if the player WON instead, this if statement wont be run
+        // ? and a storyFlag would be set to true (a storyFlag that says you defeated an NPC)
+        break;
+      }
     }
 
     // ? after all events are finished, cutscene is no longer active
@@ -96,7 +105,7 @@ class OverworldMap {
     // ? basically checks if the player triggered a cutscene (not by walking ontop of a cutscene space)
     const hero = this.gameObjects["hero"]; // ? get current data of hero
     // ? get x and y coords of the spot infront of the hero's current direction
-    const nextCoords = utils.nextPosition(hero.x, hero.y, hero.direction); 
+    const nextCoords = utils.nextPosition(hero.x, hero.y, hero.direction);
     // ? iterate through game objects and check if there is an object (i.e. npcA) infront of the hero
     const match = Object.values(this.gameObjects).find((object) => {
       return `${object.x},${object.y}` === `${nextCoords.x},${nextCoords.y}`;
@@ -105,7 +114,13 @@ class OverworldMap {
     // ? and that there is an object infront of hero
     // ? and that the object (i.e. npcA) has a talking option
     if (!this.isCutscenePlaying && match && match.talking.length) {
-      this.startCutscene(match.talking[0].events); // ? start a cutscene using npcA 'talking -> events' data 
+      const relevantScenario = match.talking.find((scenario) => {
+        return (scenario.required || []).every((sf) => {
+          return playerState.storyFlags[sf];
+        });
+      });
+
+      relevantScenario && this.startCutscene(relevantScenario.events); // ? start a cutscene using npcA 'talking -> events' data
     }
   }
 
@@ -143,11 +158,15 @@ window.OverworldMaps = {
         ],
         talking: [
           {
+            required: ["TALKED_TO_ERIO"],
+            events: [{ type: "textMessage", text: "Isn't Erio the coolest?", faceHero: "npcA" }],
+          },
+          {
             events: [
-              { type: "textMessage", text: "I'm busy...", faceHero: "npcA" },
+              { type: "textMessage", text: "I'm going to crush you!", faceHero: "npcA" },
               { type: "battle", enemyId: "beth" },
-              // { type: "textMessage", text: "Go away!" },
-              // { who: "hero", type: "walk", direction: "up" },
+              { type: "addStoryFlag", flag: "DEFEATED_BETH" },
+              { type: "textMessage", text: "You crushed me like weak pepper...", faceHero: "npcA" },
             ],
           },
         ],
@@ -162,10 +181,18 @@ window.OverworldMaps = {
           {
             events: [
               { type: "textMessage", text: "Bahahaha!", faceHero: "npcB" },
-              { type: "battle", enemyId: "erio" },
+              { type: "addStoryFlag", flag: "TALKED_TO_ERIO" },
+              // { type: "battle", enemyId: "erio" },
             ],
           },
         ],
+      },
+      pizzaStone: {
+        type: "PizzaStone",
+        x: utils.withGrid(2),
+        y: utils.withGrid(7),
+        storyFlags: "USED_PIZZA_STONE",
+        pizzas: ["v001", "f001"],
       },
     },
     walls: {
