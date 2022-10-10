@@ -1,7 +1,7 @@
 window.Actions = {
   damage1: {
     name: "Whomp!",
-    description: "Pillowy punch of dough",
+    description: "Pillowy punch of dough, +10 Damage",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
       { type: "animation", animation: "spin"},
@@ -10,7 +10,7 @@ window.Actions = {
   },
   saucyStatus: {
     name: "Tomato Squeeze",
-    description: "Applies the Saucy status",
+    description: "Applies the Saucy status, +5 HP every player turn",
     targetType: "friendly",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
@@ -19,7 +19,7 @@ window.Actions = {
   },
   clumsyStatus: {
     name: "Olive Oil",
-    description: "Slippery mess of deliciousness",
+    description: "Slippery mess of deliciousness, has a change to nullify opponents attack",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
       { type: "animation", animation: "glob", color: "#dafd2a" },
@@ -34,17 +34,18 @@ window.Actions = {
     targetType: "friendly",
     success: [
       { type: "textMessage", text: "{CASTER} uses a {ACTION}!"},
-      { type: "stateChange", status: null },
-      { type: "textMessage", text: "Feeling fresh!", },
+      { type: "stateChange", recover: 5, },
+      { type: "textMessage", text: "Feeling fresh! +5 HP", },
     ]
   },
   item_recoverHp: {
     name: "Parmesan",
+    description: "Smells great!",
     targetType: "friendly",
     success: [
       { type:"textMessage", text: "{CASTER} sprinkles on some {ACTION}!", },
       { type:"stateChange", recover: 10, },
-      { type:"textMessage", text: "{CASTER} recovers HP!", },
+      { type:"textMessage", text: "{CASTER} recovers +10 HP!", },
     ]
   },
 }

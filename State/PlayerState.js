@@ -21,7 +21,7 @@ class PlayerState {
     this.items = [
       { actionId: "item_recoverStatus", instanceId: "item1" },
       { actionId: "item_recoverStatus", instanceId: "item2" },
-      { actionId: "item_recoverStatus", instanceId: "item3" },
+      { actionId: "item_recoverHp", instanceId: "item3" },
     ];
     this.storyFlags = {};
   }
